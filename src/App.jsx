@@ -4,6 +4,7 @@ import './App.css'
 
 function App() {
     const [account, setAccount] = useState('')
+    const [name, setName] = useState('')
     const [submitted, setSubmitted] = useState(false)
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
@@ -37,9 +38,22 @@ function App() {
         if (error) setError('')
     }
 
+    const handleNameChange = (e) => {
+        setName(e.target.value)
+        if (error) setError('')
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault()
         const trimmed = account.trim()
+        const trimmedName = name.trim()
+        
+        if (!trimmedName) {
+            setError('โปรดกรอกชื่อ')
+            setSubmitted(false)
+            return
+        }
+        
         if (!trimmed) {
             setError('โปรดกรอกหมายเลขบัญชีธนาคาร')
             setSubmitted(false)
@@ -66,7 +80,10 @@ function App() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ accountNumber: normalized })
+                body: JSON.stringify({ 
+                    accountNumber: normalized,
+                    name: trimmedName 
+                })
             })
 
             if (!response.ok) {
@@ -78,6 +95,7 @@ function App() {
             setSavedAccount(data)
             setSubmitted(true)
             setAccount('') // Clear input after success
+            setName('') // Clear name input
             
             // Refresh accounts list
             fetchAccounts()
@@ -93,6 +111,14 @@ function App() {
         <main className="App">
             <h1>Enter Your Bank Account</h1>
             <form onSubmit={handleSubmit}>
+                <input
+                    type="text"
+                    placeholder="ชื่อ-นามสกุล"
+                    value={name}
+                    onChange={handleNameChange}
+                    aria-label="Name"
+                    disabled={loading}
+                />
                 <input
                     type="text"
                     placeholder="Bank Account"
@@ -111,6 +137,7 @@ function App() {
             {submitted && savedAccount && (
                 <div className="success">
                     <p>✅ บันทึกสำเร็จ!</p>
+                    <p>ชื่อ: <strong>{savedAccount.name}</strong></p>
                     <p>หมายเลขบัญชี: <strong>{savedAccount.accountNumber}</strong></p>
                     <p>ID: {savedAccount._id}</p>
                 </div>
@@ -129,6 +156,7 @@ function App() {
                             <div key={acc._id} className="account-card">
                                 <div className="account-number">#{index + 1}</div>
                                 <div className="account-details">
+                                    <p className="name">{acc.name}</p>
                                     <p className="number">{acc.accountNumber}</p>
                                     <p className="id">ID: {acc._id}</p>
                                 </div>

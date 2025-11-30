@@ -157,11 +157,18 @@
   color: white;
 }
 
+.account-details .name {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
 .account-details .number {
   margin: 0;
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 500;
   letter-spacing: 1px;
+  opacity: 0.95;
 }
 
 .account-details .id {
